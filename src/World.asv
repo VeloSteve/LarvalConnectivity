@@ -31,10 +31,8 @@ classdef World < handle
         end
         
         function adjustConnectivity(obj, mult)
-            %ADJUSTCONNECTIVITY Scale all between-reef connectivity values.
-            
-            % Save diagonal, scale everything, restore diagonal values.
-            diagonal = diag(obj.connectivity);  
+            %ADJUSTCONNECTIVITY Scl
+            diagonal = diag(obj.connectivity);
             obj.connectivity = obj.connectivity * mult;
             obj.connectivity(1:size(obj.connectivity,1)+1:end) = diagonal;
         end
