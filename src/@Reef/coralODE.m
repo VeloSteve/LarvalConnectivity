@@ -30,6 +30,11 @@ function [dydt] = coralODE(obj, t, startVals, tMonths, ...
     % Piecewise polynomials which can be re-used across function calls:
     persistent interpTemp;
     persistent interpRI;
+    if (nargin == 1)
+        clear interpTemp;
+        clear interpRI;
+        return;
+    end
     Sn    = con.Sn; % number of symbionts per coral
     Cn    = con.Cn; % number of coral populations
     % Symbiont-related

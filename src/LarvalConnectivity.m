@@ -12,8 +12,13 @@
 % recruit based on a the mix of local and remote larvae, affected by current SST
 % update population genotype to reflect this mix
 
-% Possibly a distraction, but let's try this as an object-oriented program.
-w = World(1860, 2100, 2001, 'RCP6.0');
+startYear = 1860;
+endYear = 2100;
+historyYear = 2001;
+climate = "RCP6.0";
+scaleConnectivity = 0.1;
+
+w = World(startYear, endYear, historyYear, climate, scaleConnectivity);
 w.start();
 
 % Plot some results

@@ -12,31 +12,71 @@ classdef World < handle
        
         connectivity =  ...
             [0.80 0.01 0.00; ...
+             0.00 0.80 0.00; ...
+             0.01 0.00 0.80];
+        %{
+            [0.80 0.01 0.00; ...
              0.00 0.80 0.01; ...
              0.00 0.00 0.80];  
+        %}
     end
     
     methods
-        function obj = World(startYear, endYear, historyYear, climate)
+        function obj = World(startYear, endYear, historyYear, climate, scale)
             %WORLD Construct an instance of World
             %   All the reefs in the world.
             % startYear and endYear are years, as integers
             % climate is one of RCP2.6, RCP4.5, RCP6.0, RCP8.5
             % indicating a climate scenario from the IPCC AR5 report.
+            % scale multiplies the connectivity matrix.
             obj.startYear = startYear;
             obj.endYear = endYear;
             obj.nowYear = startYear;
             obj.climate = climate;
+            obj.adjustConnectivity(scale);
             obj.buildReefs(historyYear);
         end
-        
+                
+        function start(obj)
+            %START Begins the passage of time, after setup is complete.
+            while obj.nowYear < obj.endYear
+                if mod(obj.nowYear, 20) == 0
+                    fprintf("Stepping from year %d\n", obj.nowYear);
+                end
+                startMonth = 1 + 12 * (obj.nowYear - obj.startYear);
+
+                %tic
+                for r = obj.reefs
+                    r.stepOneYear(startMonth);
+                end
+
+                %toc
+                obj.nowYear = obj.nowYear + 1;
+                % I expected the line below to call spawn() on each reef,
+                % but instead it passed the reefs array to the spawn function.
+                %obj.reefs.spawn();
+                % This works as expected.
+                for r = obj.reefs
+                    r.spawn(1 + 12 * (obj.nowYear - obj.startYear));
+                end
+
+            end
+        end
+    end
+    
+    methods (Access=private)
         function adjustConnectivity(obj, mult)
             %ADJUSTCONNECTIVITY Scale all between-reef connectivity values.
             
+            if ~isempty(obj.reefs)
+                error("Calling adjustConnectivity after reefs are build will not have the intended effect.");
+            end
+            if mult == 1.0; return; end
             % Save diagonal, scale everything, restore diagonal values.
             diagonal = diag(obj.connectivity);  
             obj.connectivity = obj.connectivity * mult;
             obj.connectivity(1:size(obj.connectivity,1)+1:end) = diagonal;
+            disp(obj.connectivity);
         end
         
         function buildReefs(obj, historyYear)
@@ -68,32 +108,7 @@ classdef World < handle
                 r.addCoral(Coral(1.0, 0.8, con), historyMonths);
             end
         end
-        
-        function start(obj)
-            %START Begins the passage of time, after setup is complete.
-            while obj.nowYear < obj.endYear
-                if mod(obj.nowYear, 10) == 0
-                    fprintf("Stepping from year %d\n", obj.nowYear);
-                end
-                startMonth = 1 + 12 * (obj.nowYear - obj.startYear);
-
-                tic
-                for r = obj.reefs
-                    r.stepOneYear(startMonth);
-                end
-
-                toc
-                obj.nowYear = obj.nowYear + 1;
-                % I expected the line below to call spawn() on each reef,
-                % but instead it passed the reefs array to the spawn function.
-                %obj.reefs.spawn();
-                % This works as expected.
-                for r = obj.reefs
-                    r.spawn(1 + 12 * (obj.nowYear - obj.startYear));
-                end
-
-            end
-        end
     end
+
 end
 

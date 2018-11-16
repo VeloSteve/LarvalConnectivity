@@ -107,7 +107,7 @@ classdef Reef < handle
             % This may cause a slight delay as the function is re-parsed, but
             % it's easier than having a special flag for clearing those
             % variables.
-            clear coralODE;
+            obj.coralODE();
             
             % Note that obj.SST and ri must be arrays of values spaced 1 month
             % apart, and must start with a value matching t=startMonth at the
