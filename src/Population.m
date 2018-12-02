@@ -39,6 +39,19 @@ classdef Population < handle
             newSize = fraction * obj.pop / obj.K;
             pop = Population(t, newSize, obj.K, obj.con);
         end
+        
+        function print(obj, verbose, ~)
+        %PRINT Print information about this Population.
+        %
+        % If verbose is false, just the population and carrying capacity.
+        % If true, also the growth-related constants.  Note that this is
+        % partially redundant with the output Matlab gives by just typing the
+        % variable name.
+            fprintf("Population %7.2e of K = %7.2e\n", obj.pop, obj.K);
+            if verbose
+                disp(obj.con);
+            end
+        end
     end
 end
 
