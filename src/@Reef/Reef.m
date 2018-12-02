@@ -140,7 +140,8 @@ classdef Reef < handle
             % variables.
             obj.multiCoralODE();
             
-
+            % Stack growth-related constants for the current set of corals.
+            obj.appendConstants();
             
             % Note that obj.SST and ri must be arrays of values spaced 1 month
             % apart, and must start with a value matching t=startMonth at the
@@ -210,7 +211,31 @@ classdef Reef < handle
 
             %fprintf("Reef %d now has %d corals.\n", obj.id, length(obj.corals));
         end
-
+        
+        function print(obj, verbose, levels)
+        %PRINT Print information about this Reef.
+        %
+        % If verbose is false, just the population and carrying capacity.
+        % If true, also the growth-related constants.  Note that this is
+        % partially redundant with the output Matlab gives by just typing the
+        % variable name.
+        % levels > 0 tells the method to recursively print constained
+        % objects to that depth.       
+            fprintf("%s %s %d at %6.2f, %6.2f has %d corals.\n", ...
+                obj.name, class(obj), obj.id, obj.lat, obj.lon, ...
+                length(obj.corals));
+            if verbose
+                disp(obj.sharedConstants);
+                fprintf("Connectivity: ");
+                fprintf("%f ", obj.connect);
+                fprintf("\n");
+            end
+            if levels
+                for c = 1:length(obj.corals)
+                    obj.corals(c).print(verbose, levels-1);
+                end
+            end
+        end
     end
     methods (Access=private)
         function appendConstants(obj)

@@ -48,8 +48,8 @@ function [dydt] = multiCoralODE(obj, t, startVals, tMonths, ...
     % Sn = Cn for the MS 274 project
     Cn = length(startVals)/2;
     Sn = Cn;
-    Sold = startVals(1:Sn);
-    Cold = startVals(Sn+1:end);
+    Sold = startVals(1:Sn)';
+    Cold = startVals(Sn+1:end)';
 
     % In the full model, seeds are calculated outside the loops and 
     % passed in, but this is easy for now:
@@ -74,20 +74,19 @@ function [dydt] = multiCoralODE(obj, t, startVals, tMonths, ...
     T = interpTemp(t);
     rm  = a*exp(b*T);  % Faster than interpolating already-made values!
     if isempty(interpRI)
-        % interpRI = griddedInterpolant(t:t+length(ri)-1, ri, 'pchip');
         for i = 1:Cn
             interpRI{i} = griddedInterpolant(t:t+length(ri(i, :))-1, ri(i, :), 'pchip');
         end
     end
     for i = 1:Cn
-        riNow = interpRI{i}(i)';
+        riNow(i) = interpRI{i}(i)';
     end
 
     % Baskett 2009 equations 4 and 5.
     dSdT = Sold ./ (KS .* Cold) .* (riNow .* KS .* Cold - rm .* symSum ) ;
     %              
     
-    dCdT = Cold .* (G .* Sold./ (KS .* Cold) * (KC - Cold)/KC - Mu ./(1+um .* Sold./(KS .* Cold)));
+    dCdT = Cold .* (G .* Sold./ (KS .* Cold) .* (KC - Cold) ./KC - Mu ./(1+um .* Sold./(KS .* Cold)));
     %              [    growth                 space comp        mortality, less symbiont effect ]   
     
     % We can't set a seed value rigidly in the output, since it's a
@@ -97,7 +96,6 @@ function [dydt] = multiCoralODE(obj, t, startVals, tMonths, ...
     dSdT = dSdT .* flag; 
     flag = dCdT > 0 | Cold(1:Cn)-C_seed > 0;
     dCdT = dCdT .* flag;
-    dCdT = repmat(dCdT, 1, Sn);
 
     dydt = [dSdT dCdT]';
 

@@ -51,6 +51,25 @@ classdef Coral < Population
             obj.ageClass = AgeClass.next(obj.ageClass);
         end
         
+        function print(obj, verbose, levels)
+        %PRINT Print information about this Coral.
+        %
+        % If verbose is false, just the population and carrying capacity.
+        % If true, also the growth-related constants.  Note that this is
+        % partially redundant with the output Matlab gives by just typing the
+        % variable name.
+        % levels > 0 tells the coral method to recursively print constained
+        % symbionts.
+            fprintf("%8s %s %s population %7.2e of K = %7.2e (%6.2f pct)\n", ...
+                obj.ageClass, obj.ecotype, class(obj), obj.pop, obj.K, ...
+                100*obj.pop/obj.K);
+            if verbose
+                disp(obj.con);
+            end
+            if levels
+                obj.sym.print(verbose, levels-1);
+            end
+        end
         
     end
 end

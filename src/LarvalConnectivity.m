@@ -13,7 +13,7 @@
 % update population genotype to reflect this mix
 
 startYear = 1860;
-endYear = 1880;  % XXX normally 2100
+endYear = 1875;  % XXX normally 2100
 historyYear = 2001;
 climate = "RCP6.0";
 scaleConnectivity = 1.0;

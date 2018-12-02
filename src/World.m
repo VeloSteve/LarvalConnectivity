@@ -37,8 +37,13 @@ classdef World < handle
             obj.adjustConnectivity(scale);
             obj.buildReefs(historyYear);
         end
-                
+        
         function start(obj)
+            %START Begins the passage of time, after setup is complete.
+            obj.startSerial();
+            % obj.startParallel();
+        end
+        function startSerial(obj)
             %START Begins the passage of time, after setup is complete.
             while obj.nowYear < obj.endYear
                 if mod(obj.nowYear, 20) == 0
@@ -46,14 +51,40 @@ classdef World < handle
                 end
                 startMonth = 1 + 12 * (obj.nowYear - obj.startYear);
 
-                serial = true;
                 tic
-                if serial
                     % No index needed in serial form:
                     for r = obj.reefs
                         r.stepOneYear(startMonth);
                     end
-                else
+
+                toc
+                obj.nowYear = obj.nowYear + 1;
+                % I expected the line below to call spawn() on each reef,
+                % but instead it passed the reefs array to the spawn function.
+                %obj.reefs.spawn();
+                % This works as expected.
+                    fprintf("\nYear %d\n", obj.nowYear);
+                    for r = obj.reefs
+                        %XXX debug r.spawn(1 + 12 * (obj.nowYear - obj.startYear));
+                        %fprintf("Reef %d has %d corals at World level in %d.\n", ...
+                        %    r.id, length(r.corals), obj.nowYear);
+                        r.print(0, 1);
+                    end
+
+            end % End while
+        end
+        
+        %{
+        function startParallel(obj)
+            %START Begins the passage of time, after setup is complete.
+            while obj.nowYear < obj.endYear
+                if mod(obj.nowYear, 20) == 0
+                    fprintf("Stepping from year %d\n", obj.nowYear);
+                end
+                startMonth = 1 + 12 * (obj.nowYear - obj.startYear);
+
+                tic
+
                     % At least for 3 reefs, this is much slower than
                     % serial. It's probably because of copying the reef
                     % back to the main program each time - can they
@@ -64,20 +95,14 @@ classdef World < handle
                         r.stepOneYear(startMonth);
 
                     end
-                end
+                
                 toc
                 obj.nowYear = obj.nowYear + 1;
                 % I expected the line below to call spawn() on each reef,
                 % but instead it passed the reefs array to the spawn function.
                 %obj.reefs.spawn();
                 % This works as expected.
-                if serial
-                    for r = obj.reefs
-                        r.spawn(1 + 12 * (obj.nowYear - obj.startYear));
-                        fprintf("Reef %d has %d corals at World level.\n", ...
-                            r.id, length(r.corals));
-                    end
-                else
+
                     nY = obj.nowYear;
                     sY = obj.startYear;
                     parfor i = 1:length(rrr)
@@ -86,10 +111,13 @@ classdef World < handle
                         r = rrr(i);
                         r.spawn(1 + 12 * (nY - sY));
                     end
-                end
+                
             end % End while
         end
+        %}
     end
+    
+    
     
     methods (Access=private)
         function adjustConnectivity(obj, mult)
