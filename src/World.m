@@ -65,10 +65,10 @@ classdef World < handle
                 % This works as expected.
                     fprintf("\nYear %d\n", obj.nowYear);
                     for r = obj.reefs
-                        %XXX debug r.spawn(1 + 12 * (obj.nowYear - obj.startYear));
+                        r.spawn(1 + 12 * (obj.nowYear - obj.startYear));
                         %fprintf("Reef %d has %d corals at World level in %d.\n", ...
                         %    r.id, length(r.corals), obj.nowYear);
-                        r.print(0, 1);
+                        %r.print(0, 1);
                     end
 
             end % End while

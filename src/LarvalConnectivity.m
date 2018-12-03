@@ -13,24 +13,29 @@
 % update population genotype to reflect this mix
 
 startYear = 1860;
-endYear = 1875;  % XXX normally 2100
+endYear = 2100;  % XXX normally 2100
 historyYear = 2001;
 climate = "RCP6.0";
-scaleConnectivity = 1.0;
+scaleConnectivity = 0.001;
 
 w = World(startYear, endYear, historyYear, climate, scaleConnectivity);
 w.start();
 
 % Plot some results
 coralLines = {"-k", "-b", "-g", "-c"};
+symLines = {":k", ":b", ":g", ":c"};
 reefs = w.reefs;
-for r = 1:length(reefs)
-    figure(r)
+
+for k = 1:length(reefs)
+    figure(k)
+    r = reefs(k);
     clf
     yyaxis left
-    for i = 1:length(reefs(r).corals)
-        plot(1860 + reefs(r).corals(i).history(:, 1)/12, ...
-                    reefs(r).corals(i).history(:, 2), coralLines{i}) 
+    labels = {};
+    for i = 1:length(r.corals)
+        plot(1860 + r.corals(i).history(:, 1)/12, ...
+                    r.corals(i).history(:, 2), coralLines{i}) 
+        labels{i} = char(r.corals(i).ageClass);
         hold on;
     end
     axis auto
@@ -38,9 +43,12 @@ for r = 1:length(reefs)
     ylabel('Coral') 
 
     hold on
-    yyaxis right
-    plot(1860+reefs(r).corals(1).sym.history(:, 1)/12, ...
-              reefs(r).corals(1).sym.history(:, 2), ":k")
+    yyaxis right   
+    for i = 1:length(r.corals)
+        plot(1860+r.corals(i).sym.history(:, 1)/12, ...
+                  r.corals(i).sym.history(:, 2), symLines{i})
+    end
     ylabel('Symbionts') 
-    title(strcat('Reef ', num2str(r), ", ", reefs(r).name));
+    title(strcat('Reef ', num2str(k), ", ", reefs(k).name));
+    legend(labels);
 end

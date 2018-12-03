@@ -53,6 +53,9 @@ function [dydt] = multiCoralODE(obj, t, startVals, tMonths, ...
 
     % In the full model, seeds are calculated outside the loops and 
     % passed in, but this is easy for now:
+    % original:
+    %C_seed = KC * 0.001;  % minimum population for each coral
+    %S_seed = KS * 0.0001; % minimum population for each symbiont
     C_seed = KC * 0.001;  % minimum population for each coral
     S_seed = KS * 0.0001; % minimum population for each symbiont
 
@@ -79,7 +82,7 @@ function [dydt] = multiCoralODE(obj, t, startVals, tMonths, ...
         end
     end
     for i = 1:Cn
-        riNow(i) = interpRI{i}(i)';
+        riNow(i) = interpRI{i}(t)';
     end
 
     % Baskett 2009 equations 4 and 5.
