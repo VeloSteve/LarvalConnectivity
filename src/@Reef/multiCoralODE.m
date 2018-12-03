@@ -40,6 +40,7 @@ function [dydt] = multiCoralODE(obj, t, startVals, tMonths, ...
     G     = coralCon.G;   % coral growth rates
     KS    = coralCon.KS;  % symbiont carrying capacity
     KC    = coralCon.KC;  % coral carrying capacity
+    A     = coralCon.A;
     Mu    = coralCon.Mu;  % coral basal mortality
     um    = coralCon.um;  % symbiont influence on mortality
     a     = sharedCon.a;   % symbiont linear growth rate factor
@@ -50,14 +51,16 @@ function [dydt] = multiCoralODE(obj, t, startVals, tMonths, ...
     Sn = Cn;
     Sold = startVals(1:Sn)';
     Cold = startVals(Sn+1:end)';
+    
+    sumCoral = sum(Cold);  % for space competition - XXX ignores ecotype!
 
     % In the full model, seeds are calculated outside the loops and 
     % passed in, but this is easy for now:
     % original:
     %C_seed = KC * 0.001;  % minimum population for each coral
     %S_seed = KS * 0.0001; % minimum population for each symbiont
-    C_seed = KC * 0.001;  % minimum population for each coral
-    S_seed = KS * 0.0001; % minimum population for each symbiont
+    C_seed = KC * 0.00001;  % minimum population for each coral
+    S_seed = KS * 0.000001; % minimum population for each symbiont
 
     % This can make the result function discontinuous, but if the last
     % iteration set C negative, it must be set back to the seed level.
@@ -89,7 +92,7 @@ function [dydt] = multiCoralODE(obj, t, startVals, tMonths, ...
     dSdT = Sold ./ (KS .* Cold) .* (riNow .* KS .* Cold - rm .* symSum ) ;
     %              
     
-    dCdT = Cold .* (G .* Sold./ (KS .* Cold) .* (KC - Cold) ./KC - Mu ./(1+um .* Sold./(KS .* Cold)));
+    dCdT = Cold .* (G .* Sold./ (KS .* Cold) .* (KC - sumCoral) ./KC - Mu ./(1+um .* Sold./(KS .* Cold)));
     %              [    growth                 space comp        mortality, less symbiont effect ]   
     
     % We can't set a seed value rigidly in the output, since it's a

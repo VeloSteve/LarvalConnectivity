@@ -19,6 +19,7 @@ classdef Coral < Population
             % Reefs are initialized with adult coral.
             obj.ageClass = AgeClass.Adult;
             obj.ecotype = growthParams.name;
+            %fprintf("Instantiating Coral %8s\n", obj.ageClass);
         end
         
         function coral = copySubset(obj, t, fraction)
@@ -29,6 +30,7 @@ classdef Coral < Population
             coral = Coral(t, fraction, obj.con);
             coral.setPop(t, fraction * obj.pop);
             coral.ageClass = obj.ageClass;
+            %fprintf("  class immediately changed to %8s in copySubset\n", obj.ageClass);
             coral.sym = obj.sym.copySubset(t, fraction);
         end
             

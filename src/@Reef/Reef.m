@@ -173,12 +173,17 @@ classdef Reef < handle
             for i = 1:length(obj.connect)
                 weight = obj.connect(i);
                 if weight > 0 && weight < 0.5
-                    for c = obj.corals
+                    for j = 1:length(obj.corals)
+                        c = obj.corals(j);
                         % Spawn on this reef
-                        sp = c.copySubset(monthTime, weight);
-                        % Find the target reef and start recruitment there.
-                        targetReef = findobj(obj.world.reefs, "id", i);
-                        targetReef.recruit(monthTime, sp);
+                        %fprintf("Spawning from (copySubset)");
+                        %c.print(0, 0);
+                        if c.ageClass.spawns
+                            sp = c.copySubset(monthTime, weight);
+                            % Find the target reef and start recruitment there.
+                            targetReef = findobj(obj.world.reefs, "id", i);
+                            targetReef.recruit(monthTime, sp);
+                        end
                     end     
                 end
             end
@@ -289,7 +294,7 @@ classdef Reef < handle
             %    b) Some of the younger set moves.
             % 2) There is a missing age class between sets.
             %    a) All of the younger set becomes the missing class.
-            %    b) Part fo the younger set becomes the missing class.
+            %    b) Part of the younger set becomes the missing class.
             
             if isempty(set); return; end
             % Work from the top of the set when done return it as "corals"
@@ -361,6 +366,7 @@ classdef Reef < handle
 
             % If there's no older population, create a new one.
             if ~isa(elder, "Coral")
+
                 elder = younger.copySubset(monthTime, frac);
                 fprintf("No elder, copied age is %s\n", elder.ageClass);
                 elder.nextAgeClass();

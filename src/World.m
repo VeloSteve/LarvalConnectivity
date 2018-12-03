@@ -14,11 +14,12 @@ classdef World < handle
         connectivity =  ...
             [0.80 0.01 0.00; ...
              0.00 0.80 0.00; ...
-             0.00 0.00 0.80];
+             0.01 0.00 0.80];  
+
         %{
             [0.80 0.01 0.00; ...
-             0.00 0.80 0.01; ...
-             0.00 0.00 0.80];  
+             0.00 0.80 0.00; ...
+             0.00 0.00 0.80];
         %}
     end
     
@@ -51,19 +52,19 @@ classdef World < handle
                 end
                 startMonth = 1 + 12 * (obj.nowYear - obj.startYear);
 
-                tic
+                %tic
                     % No index needed in serial form:
                     for r = obj.reefs
                         r.stepOneYear(startMonth);
                     end
 
-                toc
+                %toc
                 obj.nowYear = obj.nowYear + 1;
                 % I expected the line below to call spawn() on each reef,
                 % but instead it passed the reefs array to the spawn function.
                 %obj.reefs.spawn();
                 % This works as expected.
-                    fprintf("\nYear %d\n", obj.nowYear);
+                    %fprintf("\nYear %d\n", obj.nowYear);
                     for r = obj.reefs
                         r.spawn(1 + 12 * (obj.nowYear - obj.startYear));
                         %fprintf("Reef %d has %d corals at World level in %d.\n", ...
