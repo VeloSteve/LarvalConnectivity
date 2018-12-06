@@ -355,7 +355,6 @@ classdef Reef < handle
 
         end
         
-        
         function [younger, elder] = promoteOne(~, monthTime, younger, elder)
             %PROMOTEONE Promote one age class to another
             %
@@ -382,9 +381,17 @@ classdef Reef < handle
                 % it yet because old values are used in the variance calculation.
                 % newGi is the value for the incoming population, gi for the new
                 % combined population.
+                % Change "pop" values to use symbionts, which are not exactly
+                % proportional to coral hosts.
+                oldPop = elder.sym.pop;
+                youngPop = younger.sym.pop * frac;
+                elder.sym.setPop(monthTime, oldPop + youngPop);
                 oldGi = elder.sym.gi;
                 youngGi = younger.sym.gi;
-                gi = (oldGi * oldPop + youngGi * youngPop) / (oldPop + youngPop);
+                %fprintf("merging gi values at year %d.\n", monthTime/12);
+                gi = (oldGi * oldPop + youngGi * youngPop) / (oldPop + youngPop);                
+                %fprintf("merging gi values %f and %f to %f at year %d.\n", youngGi, oldGi, gi, monthTime/12);
+
                 % Variance is a more complicated combination which increases
                 % when the two gi values are farther apart.
                 % https://www.emathzone.com/tutorials/basic-statistics/combined-variance.html

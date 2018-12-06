@@ -73,18 +73,28 @@ function [dydt] = multiCoralODE(obj, t, startVals, tMonths, ...
 
     % Start getting interpolated values not needed in the original RK
     % approach.
+    tVec = t:t+length(temp)-1;
     if isempty(interpTemp)
         %disp('a');
-        interpTemp = griddedInterpolant(t:t+length(temp)-1, temp, 'pchip');
+        interpTemp = griddedInterpolant(tVec, temp, 'pchip');
     end
     T = interpTemp(t);
     rm  = a*exp(b*T);  % Faster than interpolating already-made values!
     if isempty(interpRI)
+        % pchip takes 3.469 seconds for the 3 reefs, computing to 2100.
+        %  repeat: 3.517, 149376 calls.
+        % linear takes 3.597, though it was supposed to be faster. Could it be
+        % less stable?  Repeat: 3.661, 154344 calls.
+        % nearest is 6.646, though it should be fastest.  285948 calls.
+        % Divided by the number of calls, the times vary only in the 3rd decimal
+        % place!
+        % Note that the griddedInterpolant line takes less than 0.064 seconds -
+        % it is the calls to the resulting function that take much more time.
         for i = 1:Cn
-            interpRI{i} = griddedInterpolant(t:t+length(ri(i, :))-1, ri(i, :), 'pchip');
+            interpRI{i} = griddedInterpolant(tVec, ri(i, :), 'pchip');
         end
     end
-    for i = 1:Cn
+    for i = Cn:-1:1
         riNow(i) = interpRI{i}(t)';
     end
 

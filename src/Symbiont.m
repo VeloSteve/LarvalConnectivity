@@ -36,8 +36,9 @@ classdef Symbiont < Population
             % The population is wrong - base it on the current symbiont.
             sym.history = [];
             sym.setPop(t, obj.pop * fraction);
-            sym.gi = obj.gi;
-            sym.selV = obj.selV;
+            %sym.gi = obj.gi;
+            %sym.selV = obj.selV;
+            sym.setGenotype(t, obj.gi, obj.selV);
         end
         
         function print(obj, ~, ~)
