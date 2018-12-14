@@ -172,7 +172,7 @@ classdef Reef < handle
             %    obj.corals(1).pop);
             for i = 1:length(obj.connect)
                 weight = obj.connect(i);
-                if weight > 0 && weight < 0.5
+                if weight > 0 && obj.id ~= i
                     for j = 1:length(obj.corals)
                         c = obj.corals(j);
                         % Spawn on this reef
