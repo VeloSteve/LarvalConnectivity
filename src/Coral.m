@@ -34,7 +34,6 @@ classdef Coral < Population
             coral.sym = obj.sym.copySubset(t, fraction);
         end
             
-        
         function setGenotype(obj, t, gi, selV)
             %SETGENOTYPE Set the optimal temperature and variance for this
             %Coral's Symbionts.

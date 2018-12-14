@@ -46,7 +46,7 @@ classdef Reporter
                     hold on;
                 end
                 set(gca, 'YScale', 'log')
-                ylim([10 1E8]);
+                ylim([100 1E8]);
 
                 %axis auto
 
@@ -58,16 +58,18 @@ classdef Reporter
                     plot(1860+r.corals(i).sym.history(:, 1)/12, ...
                               r.corals(i).sym.history(:, 2), symLines{i})
                 end
-                ylabel('Symbionts') 
+                xlabel('Year') 
+                ylabel('Symbionts (dotted lines)') 
                 set(gca, 'YScale', 'log')
-                ylim([10 1E14]);
+                ylim([100 1E14]);
 
                 title(strcat('Reef ', num2str(k), ", ", reefs(k).name));
-                legend(labels);
+                legend(labels, 'Location', 'best');
             end
         end
         
         function populationSumPlots(obj)
+            coralLines = {"-k", "-b", "-g", "-c"};
             reefs = obj.world.reefs;
             for k = 1:length(reefs)
                 maxMonth = 0;
@@ -97,18 +99,19 @@ classdef Reporter
 
                 figure(200+k);
 
-                ylabel('Coral population') 
                 idx = find(pops > 0);
                 plot(1860+months(idx)/12, pops(idx), coralLines{1})
                 set(gca, 'YScale', 'log')
-                ylim([10 1E8]);
+                ylim([100 1E8]);
+                xlabel('Year') 
+                ylabel('Coral population') 
 
                 title(strcat('Reef ', num2str(k), ", ", reefs(k).name));
 
             end
         end
         
-        function genotypePlots(obj)
+        function genotypePlots(obj, showVariance)
             %METHOD1 Summary of this method goes here
             %   Detailed explanation goes here
             % Plot some results
@@ -146,24 +149,31 @@ classdef Reporter
                         selV(2) = selV(1);
                         gi(2) = gi(1);
                     end
-                    plot(uMonths/12 + 1860, gi, symLines{i});
-                    labels{i*2-1} = char(r.corals(i).ageClass);
-                    hold on;
-                    plot(uMonths/12 + 1860, selV, selVLines{i});
-                    labels{i*2} = "";
+                    if showVariance
+                        plot(uMonths/12 + 1860, selV, selVLines{i});
+                        labels{i*2} = "";
+                        hold on;
+                        plot(uMonths/12 + 1860, gi, symLines{i});
+                        labels{i*2-1} = char(r.corals(i).ageClass);
+                    else
+                        plot(uMonths/12 + 1860, gi, symLines{i});
+                        labels{i} = char(r.corals(i).ageClass);
+                        hold on;
+                    end
 
                 end
                 %set(gca, 'YScale', 'log')
-                %ylim([0 32]);
+                if ~showVariance
+                    ylim([24 30]);
+                end
 
                 %axis auto
+                xlabel('Year') 
+                ylabel('Symbiont Genotype, °C') 
 
-                ylabel('Symbiont Genotype') 
-
-                
                 title(strcat('Reef ', num2str(k), ", ", reefs(k).name));
-                lh = legend(labels, 'Location', 'best');
-                lh.Position = [0.4, 0.5, 0.2, 0.2];
+                lh = legend(labels); %, 'Location', 'southeast');
+                lh.Position = [0.2, 0.3, 0.2, 0.2];
             end
         end
         

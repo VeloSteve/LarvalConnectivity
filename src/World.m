@@ -125,7 +125,7 @@ classdef World < handle
             %ADJUSTCONNECTIVITY Scale all between-reef connectivity values.
             
             if ~isempty(obj.reefs)
-                error("Calling adjustConnectivity after reefs are build will not have the intended effect.");
+                error("Calling adjustConnectivity after reefs are built will not have the intended effect.");
             end
             if mult == 1.0; return; end
             % Save diagonal, scale everything, restore diagonal values.
